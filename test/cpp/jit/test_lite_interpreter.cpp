@@ -15,13 +15,14 @@
 #include <torch/csrc/jit/mobile/parse_bytecode.h>
 #include <torch/csrc/jit/mobile/parse_operators.h>
 #include <torch/csrc/jit/mobile/runtime_compatibility.h>
+#include <torch/csrc/jit/mobile/upgrader_mobile.h>
 #include <torch/csrc/jit/serialization/export.h>
 #include <torch/csrc/jit/serialization/import.h>
 #include <torch/custom_class.h>
 #include <torch/torch.h>
 
-#include <unordered_set>
 #include <torch/csrc/jit/serialization/import_export_functions.h>
+#include <unordered_set>
 // Tests go in torch::jit
 namespace torch {
 namespace jit {
@@ -1502,6 +1503,23 @@ TEST(LiteInterpreterUpgraderTest, DivTensorV2) {
   ASSERT_TRUE(actual_output_list[0].toTensor().equal(expect_output));
 }
 #endif // !defined(FB_XPLAT_BUILD)
+
+TEST(LiteInterpreterUpgraderTest, Upgrader) {
+  std::vector<mobile::Function> upgrader_functions;
+
+
+  for (auto& mobile_code_data : kUpgraderByteCode) {
+    upgrader_functions.push_back(mobile::Function::registerFunc(
+        mobile_code_data.qualified_name,
+        mobile_code_data.instructions,
+        mobile_code_data.operators,
+        mobile_code_data.constants,
+        mobile_code_data.types,
+        mobile_code_data.register_size));
+  }
+
+  ASSERT_EQ(kUpgraderByteCode.size(), upgrader_functions.size());
+}
 
 } // namespace jit
 } // namespace torch

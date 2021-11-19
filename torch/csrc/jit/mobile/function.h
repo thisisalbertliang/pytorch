@@ -14,11 +14,6 @@ enum OpCode : uint8_t;
 namespace mobile {
 struct Code;
 struct Instruction;
-struct OperatorString {
-  const std::string name;
-  const std::string overload_name;
-  const c10::optional<int> num_specified_args;
-};
 
 class TORCH_API Function : public torch::jit::Function {
  public:
