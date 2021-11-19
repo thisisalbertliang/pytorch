@@ -13,7 +13,7 @@
 
 namespace torch {
 namespace jit {
-
+struct Instruction;
 struct Upgrader {
   int min_version;
   int max_version;

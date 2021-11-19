@@ -10,10 +10,11 @@ namespace torch {
 namespace jit {
 using Stack = std::vector<c10::IValue>;
 enum OpCode : uint8_t;
+struct Instruction;
+struct OperatorString;
 
 namespace mobile {
 struct Code;
-struct Instruction;
 
 class TORCH_API Function : public torch::jit::Function {
  public:
