@@ -11,6 +11,8 @@
 #include "torch/csrc/utils/python_arg_parser.h"
 #include "torch/csrc/utils/structseq.h"
 
+$ops_headers
+
 using at::Tensor;
 using at::Scalar;
 using at::ScalarType;
