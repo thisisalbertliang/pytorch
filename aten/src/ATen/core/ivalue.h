@@ -1228,8 +1228,20 @@ getCustomClassTypeMap();
 template <typename T>
 c10::ClassTypePtr getCustomClassTypeImpl() {
   auto& tmap = c10::getCustomClassTypeMap();
-  auto res = tmap.find(std::type_index(typeid(T)));
-  TORCH_CHECK(res != tmap.end(), "Can't find class id in custom class type map", "");
+  auto tindex = std::type_index(typeid(T));
+  auto res = tmap.find(tindex);
+  if (C10_UNLIKELY(res == tmap.end())) {
+    // type_index is not guaranteed to be unique across shared libraries on  some platforms
+    // Take a slow path of iterating over all registered types and compare their names
+    auto class_name = std::string(tindex.name());
+    for(const auto &it: tmap) {
+      if (class_name == it.first.name()) {
+          tmap[tindex] = it.second;
+          return it.second;
+      }
+    }
+    TORCH_CHECK(false, "Can't find class id in custom class type map for ", tindex.name());
+  }
   return res->second;
 }
 
